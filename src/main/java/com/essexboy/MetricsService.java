@@ -17,7 +17,7 @@ public class MetricsService {
     @Autowired
     MeterRegistry registry;
 
-    private Map<String, Map<String, Double>> fullMetricsMap = new HashMap<>();
+    private final Map<String, Map<String, Double>> fullMetricsMap = new HashMap<>();
 
     @PostConstruct
     public void init() {
@@ -41,9 +41,7 @@ public class MetricsService {
     }
 
     public void setMetric(String metricName, String tagName, String tagValue, Double value) {
-        if (fullMetricsMap.get(metricName) == null) {
-            fullMetricsMap.put(metricName, new HashMap<>());
-        }
+        fullMetricsMap.computeIfAbsent(metricName, k -> new HashMap<>());
         final Map<String, Double> singleMetricMap = fullMetricsMap.get(metricName);
         String metricsKey = tagName + "_" + tagValue;
         if (!singleMetricMap.containsKey(metricsKey)) {
@@ -56,6 +54,6 @@ public class MetricsService {
     }
 
     private double getTestDouble() {
-        return new BigDecimal(Math.random() * (100000L)).setScale(0, RoundingMode.UP).doubleValue();
+        return BigDecimal.valueOf(Math.random() * (100000L)).setScale(0, RoundingMode.UP).doubleValue();
     }
 }
