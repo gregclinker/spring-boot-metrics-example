@@ -45,13 +45,14 @@ public class MetricsService {
             fullMetricsMap.put(metricName, new HashMap<>());
         }
         final Map<String, Double> singleMetricMap = fullMetricsMap.get(metricName);
-        if (!singleMetricMap.containsKey(tagValue)) {
+        String metricsKey = tagName + "_" + tagValue;
+        if (!singleMetricMap.containsKey(metricsKey)) {
             Tags tags = Tags.of(tagName, tagValue);
-            Gauge.builder(metricName, singleMetricMap, map -> map.get(tagValue))
+            Gauge.builder(metricName, singleMetricMap, map -> map.get(metricsKey))
                     .tags(tags)
                     .register(registry);
         }
-        singleMetricMap.put(tagValue, value);
+        singleMetricMap.put(metricsKey, value);
     }
 
     private double getTestDouble() {
