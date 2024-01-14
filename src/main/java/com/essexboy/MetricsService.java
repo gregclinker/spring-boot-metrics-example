@@ -43,7 +43,8 @@ public class MetricsService {
         // the key of the metric used to manage the map of metrics data
         String metricsKey = tagName + "_" + tagValue;
         if (!singleMetricMap.containsKey(metricsKey)) {
-            Tags tags = Tags.of(tagName, tagValue);
+            Tags tags = Tags.of (new Tag[]{Tag.of(tagName, tagValue)});
+            //Tags tags = Tags.of(tagName, tagValue);
             Gauge.builder(metricName, singleMetricMap, map -> map.get(metricsKey))
                     .tags(tags)
                     .register(registry);
