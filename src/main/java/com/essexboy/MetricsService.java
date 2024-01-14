@@ -16,20 +16,18 @@ import java.util.function.Predicate;
 public class MetricsService {
     @Autowired
     MeterRegistry registry;
-
     private final Map<String, Map<String, Double>> fullMetricsMap = new HashMap<>();
-
     @PostConstruct
     public void init() {
         registry.config()
                 .meterFilter(MeterFilter.denyUnless(new Predicate<Meter.Id>() {
                     @Override
                     public boolean test(Meter.Id id) {
+                        // switch off all metrics except these ones
                         return List.of("pod_cpu_usage", "pod_memory_usage").contains(id.getName());
                     }
                 }));
     }
-
     @Scheduled(fixedDelay = 1000)
     public void loadMetrics() {
         setMetric("pod_cpu_usage", "pod_name", "pod1", getTestDouble());
@@ -39,10 +37,10 @@ public class MetricsService {
         setMetric("pod_memory_usage", "pod_name", "pod2", getTestDouble());
         setMetric("pod_memory_usage", "pod_name", "pod3", getTestDouble());
     }
-
     public void setMetric(String metricName, String tagName, String tagValue, Double value) {
         fullMetricsMap.computeIfAbsent(metricName, k -> new HashMap<>());
         final Map<String, Double> singleMetricMap = fullMetricsMap.get(metricName);
+        // the key of the metric used to manage the map of metrics data
         String metricsKey = tagName + "_" + tagValue;
         if (!singleMetricMap.containsKey(metricsKey)) {
             Tags tags = Tags.of(tagName, tagValue);
@@ -52,7 +50,6 @@ public class MetricsService {
         }
         singleMetricMap.put(metricsKey, value);
     }
-
     private double getTestDouble() {
         return BigDecimal.valueOf(Math.random() * (100000L)).setScale(0, RoundingMode.UP).doubleValue();
     }
