@@ -1,6 +1,8 @@
 # spring-boot-metrics-example
 
-## Create Promethesu Metrics 
+## Create Promethesu Metrics
+
+Will produce the following metrics on http://localhost:8080/metrics
 ```
 # HELP pod_memory_usage pod memory usage in bytes
 # TYPE pod_memory_usage gauge
